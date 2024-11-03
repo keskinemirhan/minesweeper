@@ -12,8 +12,8 @@ namespace minesweeper.Controls;
 
 public partial class CellControl : UserControl, ICell
 {
-    public event EventHandler LeftButtonClicked;
-    public event EventHandler RightButtonClicked;
+    public event EventHandler? LeftButtonClicked;
+    public event EventHandler? RightButtonClicked;
     private bool _hasOpened;
     public bool HasMine { get; set; }
     public bool HasOpened
