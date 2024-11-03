@@ -9,7 +9,7 @@ public class Game<T> where T : ICell, new()
     public int ColumnCount { get; private set; }
     public int NonOpenedCellCount { get; private set; }
     public int FlaggedCellCount { get; private set; }
-    public int BombCount { get; private set; }
+    public int MineCount { get; private set; }
 
     public bool IsOver { get; private set; }
     public bool HasWon { get; private set; }
@@ -107,17 +107,17 @@ public class Game<T> where T : ICell, new()
         }
         return mineCells;
     }
-    public Game(int rowCount, int columnCount, int bombCount)
+    public Game(int rowCount, int columnCount, int mineCount)
     {
         this.RowCount = rowCount;
         this.ColumnCount = columnCount;
-        this.BombCount = bombCount;
+        this.MineCount = mineCount;
 
         this.cells = this.GenerateCells();
-        this.NonOpenedCellCount = rowCount * columnCount - bombCount;
+        this.NonOpenedCellCount = rowCount * columnCount - mineCount;
         this.FlaggedCellCount = 0;
 
-        this.GenerateMines(bombCount);
+        this.GenerateMines(mineCount);
         this.CountNeighborMines();
     }
     private void GenerateMines(int count)
