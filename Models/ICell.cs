@@ -1,8 +1,6 @@
-using Avalonia.Controls;
-
 namespace minesweeper.Models;
 
-public interface ICell 
+public interface ICell
 {
     public bool HasMine { get; set; }
     public bool HasOpened { get; set; }
