@@ -9,45 +9,72 @@ public class Game<T> where T : ICell, new()
     public int ColumnCount { get; private set; }
     public int NonOpenedCellCount { get; private set; }
     public int FlaggedCellCount { get; private set; }
+    public int BombCount { get; private set; }
+
+    public bool IsOver { get; private set; }
+    public bool HasWon { get; private set; }
+
     private T[,] cells;
 
     public T GetCell(int rowPos, int columnPos)
     {
         return this.cells[rowPos, columnPos];
     }
-    public List<T> OpenCell(int rowPos, int columnPos)
+
+    public void OpenCell(int rowPos, int columnPos)
     {
-        if (rowPos >= this.RowCount ||
-        columnPos >= this.ColumnCount ||
-        rowPos < 0 ||
-        columnPos < 0)
-            return new List<T>();
+        if (
+            rowPos >= this.RowCount ||
+            columnPos >= this.ColumnCount ||
+            rowPos < 0 ||
+            columnPos < 0
+        ) return;
         var cell = this.GetCell(rowPos, columnPos);
-        if (cell.HasOpened) return new List<T>();
-        var openCells = new List<T>
+        this.OpenCell(cell);
+    }
+
+    public void OpenCell(T cell)
+    {
+        if (this.IsOver) return;
+        if (cell.HasMine)
         {
-            cell
-        };
+            cell.HasOpened = true;
+            this.IsOver = true;
+            this.HasWon = false;
+            return;
+        }
+        var openCells = new List<T>();
+        this.openCellRecursive(cell, openCells);
+        this.NonOpenedCellCount -= openCells.Count;
+        Console.WriteLine("NonOpened: " + this.NonOpenedCellCount);
+        if (this.NonOpenedCellCount <= 0)
+        {
+            this.IsOver = true;
+            this.HasWon = true;
+        }
+    }
+
+    private void openCellRecursive(T cell, List<T> openCells)
+    {
+        if (cell.HasOpened) return;
         cell.HasOpened = true;
-        if (cell.NeighboringMineCount == 0 && !cell.HasMine)
+        openCells.Add(cell);
+        if (cell.NeighboringMineCount == 0)
         {
-            foreach (var neighbor in this.GetNeighbors(rowPos, columnPos))
+            foreach (var neighbor in this.GetNeighbors(cell.RowPos, cell.ColumnPos))
             {
                 if (!neighbor.HasOpened)
                 {
-                    openCells.Add(neighbor);
-                    var nOfNeighbor = this.OpenCell(neighbor.RowPos, neighbor.ColumnPos);
-                    openCells.AddRange(nOfNeighbor);
+                    this.openCellRecursive(neighbor, openCells);
                 }
             }
         }
-        this.NonOpenedCellCount -= openCells.Count;
-        return openCells;
     }
 
     public T FlagCell(int rowPos, int columnPos)
     {
         var cell = this.GetCell(rowPos, columnPos);
+        if (this.IsOver || cell.HasOpened) return cell;
         cell.IsFlagged = true;
         return cell;
     }
@@ -63,6 +90,7 @@ public class Game<T> where T : ICell, new()
     public T UnFlagCell(int rowPos, int columnPos)
     {
         var cell = this.GetCell(rowPos, columnPos);
+        if (this.IsOver) return cell;
         cell.IsFlagged = false;
         return cell;
     }
@@ -70,9 +98,10 @@ public class Game<T> where T : ICell, new()
     {
         this.RowCount = rowCount;
         this.ColumnCount = columnCount;
+        this.BombCount = bombCount;
 
         this.cells = this.GenerateCells();
-        this.NonOpenedCellCount = this.RowCount * this.ColumnCount;
+        this.NonOpenedCellCount = rowCount * columnCount - bombCount;
         this.FlaggedCellCount = 0;
 
         this.GenerateMines(bombCount);
