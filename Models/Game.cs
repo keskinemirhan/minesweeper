@@ -1,4 +1,5 @@
 using System;
+using Avalonia.Threading;
 using System.Collections.Generic;
 
 namespace minesweeper.Models;
@@ -9,8 +10,13 @@ public class Game<T> where T : ICell, new()
     public int ColumnCount { get; private set; }
     public int NonOpenedCellCount { get; private set; }
     public int FlaggedCellCount { get; private set; }
+    public int FlaggedMineCount { get; private set; }
     public int MineCount { get; private set; }
 
+    private DispatcherTimer? timer;
+    public int GameSeconds;
+    public int Score;
+    public event EventHandler? SecondPassed;
     public bool IsOver { get; private set; }
     public bool HasWon { get; private set; }
 
@@ -40,8 +46,7 @@ public class Game<T> where T : ICell, new()
         if (cell.HasMine)
         {
             cell.HasOpened = true;
-            this.IsOver = true;
-            this.HasWon = false;
+            this.EndGame(false);
             return;
         }
         var openCells = new List<T>();
@@ -50,8 +55,7 @@ public class Game<T> where T : ICell, new()
         Console.WriteLine("NonOpened: " + this.NonOpenedCellCount);
         if (this.NonOpenedCellCount <= 0)
         {
-            this.IsOver = true;
-            this.HasWon = true;
+            this.EndGame(true);
         }
     }
 
@@ -81,7 +85,8 @@ public class Game<T> where T : ICell, new()
 
     public void FlagCell(T cell)
     {
-        if (this.IsOver || cell.HasOpened) return;
+        if (this.IsOver || cell.HasOpened || cell.IsFlagged) return;
+        if (cell.HasMine) this.FlaggedMineCount++;
         cell.IsFlagged = true;
     }
 
@@ -94,7 +99,8 @@ public class Game<T> where T : ICell, new()
 
     public void UnFlagCell(T cell)
     {
-        if (this.IsOver) return;
+        if (this.IsOver || !cell.IsFlagged) return;
+        if (cell.HasMine) this.FlaggedMineCount--;
         cell.IsFlagged = false;
     }
 
@@ -107,6 +113,7 @@ public class Game<T> where T : ICell, new()
         }
         return mineCells;
     }
+
     public Game(int rowCount, int columnCount, int mineCount)
     {
         this.RowCount = rowCount;
@@ -119,7 +126,34 @@ public class Game<T> where T : ICell, new()
 
         this.GenerateMines(mineCount);
         this.CountNeighborMines();
+        this.GameSeconds = 0;
+
     }
+
+    public void StartTimer()
+    {
+        this.timer = new DispatcherTimer();
+        this.timer.Interval = TimeSpan.FromSeconds(1);
+        this.timer.Tick += (sender, e) => this.updateTimer();
+        this.timer.Tick += (sender, e) => Console.WriteLine("Second");
+        this.timer.Start();
+    }
+
+    private void EndGame(bool win)
+    {
+        this.timer?.Stop();
+        this.HasWon = win;
+        this.IsOver = true;
+        if (this.GameSeconds == 0) this.GameSeconds = 1;
+        this.Score = (int)(((float)this.FlaggedMineCount / (float)this.GameSeconds) * 1000.0);
+    }
+
+    private void updateTimer()
+    {
+        this.GameSeconds++;
+        this.SecondPassed?.Invoke(this, EventArgs.Empty);
+    }
+
     private void GenerateMines(int count)
     {
         var random = new Random();
@@ -151,6 +185,7 @@ public class Game<T> where T : ICell, new()
             }
         }
     }
+
     private T[,] GenerateCells()
     {
         var genCells = new T[this.RowCount, this.ColumnCount];
@@ -170,6 +205,7 @@ public class Game<T> where T : ICell, new()
         }
         return genCells;
     }
+
     private List<T> GetNeighbors(int rowPos, int columnPos)
     {
         var neighbors = new List<T>();
