@@ -86,13 +86,19 @@ public partial class CellControl : UserControl, ICell
         }
         set
         {
-            if (!this.HasOpened && value)
+            if (!value)
+            {
+                CellImg.IsVisible = false;
+            }
+            else
             {
                 var imageUrl = "avares://minesweeper/Assets/flag.png";
                 var bitmap = new Bitmap(AssetLoader.Open(new Uri(imageUrl)));
+
                 CellImg.IsVisible = true;
                 CellImg.Source = bitmap;
             }
+            this._isFlagged = value;
         }
     }
     public int RowPos { get; set; }

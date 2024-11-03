@@ -36,6 +36,7 @@ public class Game<T> where T : ICell, new()
     public void OpenCell(T cell)
     {
         if (this.IsOver) return;
+        if (cell.IsFlagged) this.UnFlagCell(cell);
         if (cell.HasMine)
         {
             cell.HasOpened = true;
@@ -71,13 +72,32 @@ public class Game<T> where T : ICell, new()
         }
     }
 
-    public T FlagCell(int rowPos, int columnPos)
+
+    public void FlagCell(int rowPos, int columnPos)
     {
         var cell = this.GetCell(rowPos, columnPos);
-        if (this.IsOver || cell.HasOpened) return cell;
-        cell.IsFlagged = true;
-        return cell;
+        this.FlagCell(cell);
     }
+
+    public void FlagCell(T cell)
+    {
+        if (this.IsOver || cell.HasOpened) return;
+        cell.IsFlagged = true;
+    }
+
+
+    public void UnFlagCell(int rowPos, int columnPos)
+    {
+        var cell = this.GetCell(rowPos, columnPos);
+        this.UnFlagCell(cell);
+    }
+
+    public void UnFlagCell(T cell)
+    {
+        if (this.IsOver) return;
+        cell.IsFlagged = false;
+    }
+
     public List<T> GetMineCells()
     {
         var mineCells = new List<T>();
@@ -86,13 +106,6 @@ public class Game<T> where T : ICell, new()
             if (cell.HasMine) mineCells.Add(cell);
         }
         return mineCells;
-    }
-    public T UnFlagCell(int rowPos, int columnPos)
-    {
-        var cell = this.GetCell(rowPos, columnPos);
-        if (this.IsOver) return cell;
-        cell.IsFlagged = false;
-        return cell;
     }
     public Game(int rowCount, int columnCount, int bombCount)
     {
