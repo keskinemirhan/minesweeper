@@ -70,7 +70,11 @@ public class Game<T> where T : ICell, new()
     {
         this.RowCount = rowCount;
         this.ColumnCount = columnCount;
-        this.GenerateCells();
+
+        this.cells = this.GenerateCells();
+        this.NonOpenedCellCount = this.RowCount * this.ColumnCount;
+        this.FlaggedCellCount = 0;
+
         this.GenerateMines(bombCount);
         this.CountNeighborMines();
     }
@@ -105,9 +109,9 @@ public class Game<T> where T : ICell, new()
             }
         }
     }
-    private void GenerateCells()
+    private T[,] GenerateCells()
     {
-        this.cells = new T[this.RowCount, this.ColumnCount];
+        var genCells = new T[this.RowCount, this.ColumnCount];
         for (int rowPos = 0; rowPos < this.RowCount; rowPos++)
         {
             for (int columnPos = 0; columnPos < this.ColumnCount; columnPos++)
@@ -119,11 +123,10 @@ public class Game<T> where T : ICell, new()
                 cell.HasOpened = false;
                 cell.IsFlagged = false;
                 cell.NeighboringMineCount = 0;
-                this.cells[rowPos, columnPos] = cell;
+                genCells[rowPos, columnPos] = cell;
             }
         }
-        this.NonOpenedCellCount = this.RowCount * this.ColumnCount;
-        this.FlaggedCellCount = 0;
+        return genCells;
     }
     private List<T> GetNeighbors(int rowPos, int columnPos)
     {
