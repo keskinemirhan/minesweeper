@@ -29,7 +29,7 @@ public class Game<T> where T : ICell, new()
             cell
         };
         cell.HasOpened = true;
-        if (cell.NeighboringMineCount == 0)
+        if (cell.NeighboringMineCount == 0 && !cell.HasMine)
         {
             foreach (var neighbor in this.GetNeighbors(rowPos, columnPos))
             {
