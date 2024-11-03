@@ -1,63 +1,66 @@
 using System;
 using System.Collections.Generic;
 
-
 namespace minesweeper.Models;
 
-public class Game
+public class Game<T> where T : ICell, new()
 {
     public int RowCount { get; private set; }
     public int ColumnCount { get; private set; }
     public int NonOpenedCellCount { get; private set; }
     public int FlaggedCellCount { get; private set; }
-    private Cell[,] cells;
+    private T[,] cells;
 
-    public Cell GetCell(int rowPos, int columnPos)
+    public T GetCell(int rowPos, int columnPos)
     {
         return this.cells[rowPos, columnPos];
     }
-    public List<Cell> OpenCoordinate(int rowPos, int columnPos)
+    public List<T> OpenCell(int rowPos, int columnPos)
     {
-        if (rowPos > this.RowCount ||
-        columnPos > this.ColumnCount ||
+        if (rowPos >= this.RowCount ||
+        columnPos >= this.ColumnCount ||
         rowPos < 0 ||
         columnPos < 0)
-            return new List<Cell>();
+            return new List<T>();
         var cell = this.GetCell(rowPos, columnPos);
-        if (cell.HasOpened) return new List<Cell>();
-        var openCells = new List<Cell>
+        if (cell.HasOpened) return new List<T>();
+        var openCells = new List<T>
         {
             cell
         };
+        cell.HasOpened = true;
         if (cell.NeighboringMineCount == 0)
         {
             foreach (var neighbor in this.GetNeighbors(rowPos, columnPos))
             {
-                openCells.Add(neighbor);
-                var nOfNeighbor = this.OpenCoordinate(neighbor.RowPos, neighbor.ColumnPos);
-                openCells.AddRange(nOfNeighbor);
+                if (!neighbor.HasOpened)
+                {
+                    openCells.Add(neighbor);
+                    var nOfNeighbor = this.OpenCell(neighbor.RowPos, neighbor.ColumnPos);
+                    openCells.AddRange(nOfNeighbor);
+                }
             }
         }
         this.NonOpenedCellCount -= openCells.Count;
         return openCells;
     }
 
-    public Cell FlagCell(int rowPos, int columnPos)
+    public T FlagCell(int rowPos, int columnPos)
     {
         var cell = this.GetCell(rowPos, columnPos);
         cell.IsFlagged = true;
         return cell;
     }
-    public List<Cell> GetMineCells()
+    public List<T> GetMineCells()
     {
-        var mineCells = new List<Cell>();
+        var mineCells = new List<T>();
         foreach (var cell in this.cells)
         {
             if (cell.HasMine) mineCells.Add(cell);
         }
         return mineCells;
     }
-    public Cell UnFlagCell(int rowPos, int columnPos)
+    public T UnFlagCell(int rowPos, int columnPos)
     {
         var cell = this.GetCell(rowPos, columnPos);
         cell.IsFlagged = false;
@@ -104,29 +107,36 @@ public class Game
     }
     private void GenerateCells()
     {
-        this.cells = new Cell[this.RowCount, this.ColumnCount];
+        this.cells = new T[this.RowCount, this.ColumnCount];
         for (int rowPos = 0; rowPos < this.RowCount; rowPos++)
         {
             for (int columnPos = 0; columnPos < this.ColumnCount; columnPos++)
             {
-                this.cells[rowPos, columnPos] = new Cell(rowPos, columnPos);
+                var cell = new T();
+                cell.RowPos = rowPos;
+                cell.ColumnPos = columnPos;
+                cell.HasMine = false;
+                cell.HasOpened = false;
+                cell.IsFlagged = false;
+                cell.NeighboringMineCount = 0;
+                this.cells[rowPos, columnPos] = cell;
             }
         }
         this.NonOpenedCellCount = this.RowCount * this.ColumnCount;
         this.FlaggedCellCount = 0;
     }
-    private List<Cell> GetNeighbors(int rowPos, int columnPos)
+    private List<T> GetNeighbors(int rowPos, int columnPos)
     {
-        var neighbors = new List<Cell>();
+        var neighbors = new List<T>();
         for (int rowOffset = -1; rowOffset <= 1; rowOffset++)
         {
-            for (int columnOffset = -1; rowOffset <= 1; rowOffset++)
+            for (int columnOffset = -1; columnOffset <= 1; columnOffset++)
             {
                 var neighborColumnPos = columnPos + columnOffset;
                 var neighborRowPos = rowPos + rowOffset;
 
                 if ((neighborColumnPos == columnPos &&
-                neighborColumnPos == rowPos) ||
+                neighborRowPos == rowPos) ||
                 neighborRowPos >= this.RowCount ||
                 neighborColumnPos >= this.ColumnCount ||
                 neighborRowPos < 0 ||
