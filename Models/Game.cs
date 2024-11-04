@@ -156,7 +156,7 @@ public class Game<T> where T : ICell<T>, new()
     private void GenerateMines(int count)
     {
         var random = new Random();
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < count && i < this.RowCount * this.ColumnCount; i++)
         {
             int rowPos;
             int columnPos;
