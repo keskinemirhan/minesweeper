@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace minesweeper.Models;
 
-public class Game<T> where T : ICell, new()
+public class Game<T> where T : ICell<T>, new()
 {
     public int RowCount { get; private set; }
     public int ColumnCount { get; private set; }

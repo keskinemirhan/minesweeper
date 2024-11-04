@@ -10,7 +10,7 @@ using System;
 namespace minesweeper.Controls;
 
 
-public partial class CellControl : UserControl, ICell
+public partial class CellControl : UserControl, ICell<CellControl>
 {
     public event EventHandler? LeftButtonClicked;
     public event EventHandler? RightButtonClicked;

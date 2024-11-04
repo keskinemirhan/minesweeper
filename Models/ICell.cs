@@ -1,6 +1,6 @@
 namespace minesweeper.Models;
 
-public interface ICell
+public interface ICell<T> where T : new()
 {
     public bool HasMine { get; set; }
     public bool HasOpened { get; set; }
