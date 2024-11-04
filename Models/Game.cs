@@ -42,7 +42,7 @@ public class Game<T> where T : ICell<T>, new()
     public void OpenCell(T cell)
     {
         if (this.IsOver) return;
-        if (cell.IsFlagged) this.UnFlagCell(cell);
+        if (cell.IsFlagged) this.ToggleFlag(cell);
         if (cell.HasMine)
         {
             cell.HasOpened = true;
@@ -77,31 +77,18 @@ public class Game<T> where T : ICell<T>, new()
     }
 
 
-    public void FlagCell(int rowPos, int columnPos)
+    public void ToggleFlag(T cell)
     {
-        var cell = this.GetCell(rowPos, columnPos);
-        this.FlagCell(cell);
-    }
-
-    public void FlagCell(T cell)
-    {
-        if (this.IsOver || cell.HasOpened || cell.IsFlagged) return;
-        if (cell.HasMine) this.FlaggedMineCount++;
-        cell.IsFlagged = true;
-    }
-
-
-    public void UnFlagCell(int rowPos, int columnPos)
-    {
-        var cell = this.GetCell(rowPos, columnPos);
-        this.UnFlagCell(cell);
-    }
-
-    public void UnFlagCell(T cell)
-    {
-        if (this.IsOver || !cell.IsFlagged) return;
-        if (cell.HasMine) this.FlaggedMineCount--;
-        cell.IsFlagged = false;
+        if (cell.IsFlagged)
+        {
+            cell.IsFlagged = false;
+            if (cell.HasMine) this.FlaggedMineCount--;
+        }
+        else
+        {
+            cell.IsFlagged = true;
+            if (cell.HasMine) this.FlaggedMineCount++;
+        }
     }
 
     public List<T> GetMineCells()
