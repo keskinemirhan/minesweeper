@@ -1,0 +1,21 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="minesweeper.Controls.FieldControl">
+            <DockPanel>
+        <TextBlock 
+            DockPanel.Dock="Top" 
+            HorizontalAlignment="Center" 
+            FontSize="24"
+            FontWeight="Bold"
+            IsVisible="true" 
+            Margin="10" 
+            x:Name="TimeIndicator">
+                0
+            </TextBlock>
+                <Viewbox DockPanel.Dock="Top">
+                    <Grid Margin="10" x:Name="MainGrid">
+                    </Grid>
+                </Viewbox>
+            </DockPanel>
+</UserControl>
