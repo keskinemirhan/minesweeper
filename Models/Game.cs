@@ -130,10 +130,20 @@ public class Game<T> where T : ICell<T>, new()
     private void EndGame(bool win)
     {
         this.timer?.Stop();
-        this.HasWon = win;
-        this.IsOver = true;
+        foreach (var cell in this.cells)
+        {
+            if (win && !cell.IsFlagged && cell.HasMine)
+            {
+                ToggleFlag(cell);
+            }
+            else if (cell.HasMine) cell.HasOpened = true;
+
+
+        }
         if (this.GameSeconds == 0) this.GameSeconds = 1;
         this.Score = (int)(((float)this.FlaggedMineCount / (float)this.GameSeconds) * 1000.0);
+        this.HasWon = win;
+        this.IsOver = true;
         Console.WriteLine("Score: " + this.Score.ToString());
     }
 
