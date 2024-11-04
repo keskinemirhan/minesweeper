@@ -79,12 +79,13 @@ public class Game<T> where T : ICell<T>, new()
 
     public void ToggleFlag(T cell)
     {
+        if (this.IsOver) return;
         if (cell.IsFlagged)
         {
             cell.IsFlagged = false;
             if (cell.HasMine) this.FlaggedMineCount--;
         }
-        else
+        else if (!cell.HasOpened)
         {
             cell.IsFlagged = true;
             if (cell.HasMine) this.FlaggedMineCount++;
@@ -133,6 +134,7 @@ public class Game<T> where T : ICell<T>, new()
         this.IsOver = true;
         if (this.GameSeconds == 0) this.GameSeconds = 1;
         this.Score = (int)(((float)this.FlaggedMineCount / (float)this.GameSeconds) * 1000.0);
+        Console.WriteLine("Score: " + this.Score.ToString());
     }
 
     private void updateTimer()
@@ -187,6 +189,8 @@ public class Game<T> where T : ICell<T>, new()
                 cell.HasOpened = false;
                 cell.IsFlagged = false;
                 cell.NeighboringMineCount = 0;
+                cell.ToggleFlagEvent += (sender, e) => this.ToggleFlag(cell);
+                cell.OpenCellEvent += (sender, e) => this.OpenCell(cell);
                 genCells[rowPos, columnPos] = cell;
             }
         }

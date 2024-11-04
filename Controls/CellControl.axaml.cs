@@ -12,8 +12,8 @@ namespace minesweeper.Controls;
 
 public partial class CellControl : UserControl, ICell<CellControl>
 {
-    public event EventHandler? LeftButtonClicked;
-    public event EventHandler? RightButtonClicked;
+    public event EventHandler? OpenCellEvent;
+    public event EventHandler? ToggleFlagEvent;
     private bool _hasOpened;
     public bool HasMine { get; set; }
     public bool HasOpened
@@ -112,9 +112,9 @@ public partial class CellControl : UserControl, ICell<CellControl>
         {
             var pEvent = (PointerPressedEventArgs)e;
             if (pEvent.GetCurrentPoint((Control)CellButton).Properties.IsRightButtonPressed)
-                RightButtonClicked?.Invoke(this, e);
+                ToggleFlagEvent?.Invoke(this, e);
         };
-        CellButton.Click += (sender, e) => LeftButtonClicked?.Invoke(this, e);
+        CellButton.Click += (sender, e) => OpenCellEvent?.Invoke(this, e);
     }
 
     public override string ToString()
