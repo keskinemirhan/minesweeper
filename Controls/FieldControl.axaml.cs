@@ -43,7 +43,6 @@ public partial class FieldControl : UserControl
             }
         }
         this.game.SecondPassed += (sender, e) => TimeIndicator.Text = "Time: " + this.game.GameSeconds.ToString();
-        this.game.SecondPassed += (sender, e) => Console.WriteLine(this.game.GameSeconds);
         this.game.GameOver += (sender, e) =>
         {
             this.onGameOver();

@@ -25,7 +25,6 @@ public partial class StartForm : UserControl
             errors += "Please enter an username!\n";
         }
 
-        System.Console.WriteLine(username);
         int gridSizeInt = 0;
         var gridSize = GridSizeControl.Text;
         var isGridSizeNum = int.TryParse(gridSize, out gridSizeInt);
@@ -38,8 +37,6 @@ public partial class StartForm : UserControl
         {
             errors += "Please enter a number less than or equal to 30 as grid size!\n";
         }
-        System.Console.WriteLine(gridSizeInt);
-
 
         int mineCountInt = 0;
         var mineCount = MineCountControl.Text;

@@ -59,7 +59,6 @@ public class Game<T> where T : ICell<T>, new()
         var openCells = new List<T>();
         this.openCellRecursive(cell, openCells);
         this.NonOpenedCellCount -= openCells.Count;
-        Console.WriteLine("NonOpened: " + this.NonOpenedCellCount);
         if (this.NonOpenedCellCount <= 0)
         {
             this.EndGame(true);
@@ -133,7 +132,6 @@ public class Game<T> where T : ICell<T>, new()
         this.timer = new DispatcherTimer();
         this.timer.Interval = TimeSpan.FromSeconds(1);
         this.timer.Tick += (sender, e) => this.updateTimer();
-        this.timer.Tick += (sender, e) => Console.WriteLine("Second");
         this.timer.Start();
     }
 
@@ -156,7 +154,6 @@ public class Game<T> where T : ICell<T>, new()
         this.IsOver = true;
         this.GameOver?.Invoke(this, EventArgs.Empty);
         this.scoreboard.AddScore(this.username, this.Score);
-        Console.WriteLine("Score: " + this.Score.ToString());
     }
 
     private void updateTimer()

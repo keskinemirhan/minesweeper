@@ -22,7 +22,6 @@ public partial class MainWindow : Window
     public void DisplayGame(string username, int gridSize, int mineCount)
     {
         var field = new FieldControl(username, scoreboard, gridSize, mineCount, this);
-        System.Console.WriteLine(gridSize);
         MainStackPanel.Children.Clear();
         MainStackPanel.Children.Add(field);
         field.GoToMenu += (sender, e) =>
