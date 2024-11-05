@@ -17,6 +17,7 @@ public class Game<T> where T : ICell<T>, new()
     public int GameSeconds;
     public int Score;
     public event EventHandler? SecondPassed;
+    public event EventHandler? GameOver;
     public bool IsOver { get; private set; }
     public bool HasWon { get; private set; }
 
@@ -144,6 +145,7 @@ public class Game<T> where T : ICell<T>, new()
         this.Score = (int)(((float)this.FlaggedMineCount / (float)this.GameSeconds) * 1000.0);
         this.HasWon = win;
         this.IsOver = true;
+        this.GameOver?.Invoke(this, EventArgs.Empty);
         Console.WriteLine("Score: " + this.Score.ToString());
     }
 

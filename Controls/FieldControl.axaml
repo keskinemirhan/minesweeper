@@ -11,8 +11,20 @@
             IsVisible="true" 
             Margin="10" 
             x:Name="TimeIndicator">
-                0
+               Time: 0
             </TextBlock>
+        <TextBlock 
+            DockPanel.Dock="Top" 
+            HorizontalAlignment="Center" 
+            FontSize="18"
+            FontWeight="Bold"
+            IsVisible="false" 
+            Margin="10" 
+            x:Name="GameOverIndicator">
+            </TextBlock>
+            <Button Margin="0,5" IsVisible="false" HorizontalAlignment="Center" x:Name="MenuButton" DockPanel.Dock="Top">Go To Menu</Button>
+            <Button Margin="0,5" IsVisible="false" HorizontalAlignment="Center" x:Name="ScoreboardButton" DockPanel.Dock="Top">See Scoreboard</Button>
+            <Button IsVisible="false" HorizontalAlignment="Center" x:Name="RetryButton" DockPanel.Dock="Top">See Scoreboard</Button>
                 <Viewbox DockPanel.Dock="Top">
                     <Grid Margin="10" x:Name="MainGrid">
                     </Grid>
