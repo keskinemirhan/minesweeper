@@ -7,30 +7,34 @@ namespace minesweeper.Controls;
 
 public partial class FieldControl : UserControl
 {
-    private Game<CellControl> game;
-    public FieldControl(int rowCount, int columnCount, int bombCount, Window window)
+    public event EventHandler? OpenScoreboard;
+    public event EventHandler? RetryGame;
+    public event EventHandler? GoToMenu;
+
+    public Game<CellControl> game;
+    public FieldControl(string username, Scoreboard scoreboard, int gridSize, int bombCount, Window window)
     {
         InitializeComponent();
-        this.game = new Game<CellControl>(rowCount, columnCount, bombCount);
+        this.game = new Game<CellControl>(username, scoreboard, gridSize, bombCount);
         MainGrid.RowDefinitions.Clear();
         MainGrid.ColumnDefinitions.Clear();
-        for (int i = 0; i < rowCount; i++)
+        for (int i = 0; i < gridSize; i++)
         {
             var rowDef = new RowDefinition();
             rowDef.Height = GridLength.Star;
             MainGrid.RowDefinitions.Add(rowDef);
         }
 
-        for (int i = 0; i < columnCount; i++)
+        for (int i = 0; i < gridSize; i++)
         {
             var colDef = new ColumnDefinition();
             colDef.Width = GridLength.Star;
             MainGrid.ColumnDefinitions.Add(colDef);
         }
 
-        for (int i = 0; i < rowCount; i++)
+        for (int i = 0; i < gridSize; i++)
         {
-            for (int j = 0; j < columnCount; j++)
+            for (int j = 0; j < gridSize; j++)
             {
                 var cell = this.game.GetCell(i, j);
                 Grid.SetRow(cell, i);
@@ -58,12 +62,23 @@ public partial class FieldControl : UserControl
     private void onGameOver()
     {
         ScoreboardButton.IsVisible = true;
-        MenuButton.IsVisible = true;
         GameOverIndicator.Text = $"Game Over! You " + (this.game.HasWon ? "Won! " : "Lose! ") + $"With {this.game.Score.ToString()} Points!";
         GameOverIndicator.Foreground = this.game.HasWon ? new SolidColorBrush(Colors.Green) : new SolidColorBrush(Colors.Red);
+        RetryButton.Click += (sender, e) =>
+        {
+            this.RetryGame?.Invoke(this, EventArgs.Empty);
+        };
+        ScoreboardButton.Click += (sender, e) =>
+        {
+            this.OpenScoreboard?.Invoke(this, EventArgs.Empty);
+        };
+        MenuButton.Click += (sender, e) =>
+        {
+            this.GoToMenu?.Invoke(this, EventArgs.Empty);
+        };
+        MenuButton.IsVisible = true;
         RetryButton.IsVisible = true;
         GameOverIndicator.IsVisible = true;
-
 
     }
 }

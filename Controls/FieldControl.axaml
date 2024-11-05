@@ -24,7 +24,7 @@
             </TextBlock>
             <Button Margin="0,5" IsVisible="false" HorizontalAlignment="Center" x:Name="MenuButton" DockPanel.Dock="Top">Go To Menu</Button>
             <Button Margin="0,5" IsVisible="false" HorizontalAlignment="Center" x:Name="ScoreboardButton" DockPanel.Dock="Top">See Scoreboard</Button>
-            <Button IsVisible="false" HorizontalAlignment="Center" x:Name="RetryButton" DockPanel.Dock="Top">See Scoreboard</Button>
+            <Button IsVisible="false" HorizontalAlignment="Center" x:Name="RetryButton" DockPanel.Dock="Top">Retry</Button>
                 <Viewbox DockPanel.Dock="Top">
                     <Grid Margin="10" x:Name="MainGrid">
                     </Grid>

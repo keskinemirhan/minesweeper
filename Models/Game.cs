@@ -13,6 +13,8 @@ public class Game<T> where T : ICell<T>, new()
     public int FlaggedMineCount { get; private set; }
     public int MineCount { get; private set; }
 
+    public string username;
+    public Scoreboard scoreboard;
     private DispatcherTimer? timer;
     public int GameSeconds;
     public int Score;
@@ -103,14 +105,16 @@ public class Game<T> where T : ICell<T>, new()
         return mineCells;
     }
 
-    public Game(int rowCount, int columnCount, int mineCount)
+    public Game(string username, Scoreboard scoreboard, int gridSize, int mineCount)
     {
-        this.RowCount = rowCount;
-        this.ColumnCount = columnCount;
+        this.RowCount = gridSize;
+        this.ColumnCount = gridSize;
         this.MineCount = mineCount;
+        this.username = username;
+        this.scoreboard = scoreboard;
 
         this.cells = this.GenerateCells();
-        this.NonOpenedCellCount = rowCount * columnCount - mineCount;
+        this.NonOpenedCellCount = gridSize * gridSize - mineCount;
         this.FlaggedCellCount = 0;
 
         this.GenerateMines(mineCount);
@@ -146,6 +150,7 @@ public class Game<T> where T : ICell<T>, new()
         this.HasWon = win;
         this.IsOver = true;
         this.GameOver?.Invoke(this, EventArgs.Empty);
+        this.scoreboard.AddScore(this.username, this.Score);
         Console.WriteLine("Score: " + this.Score.ToString());
     }
 
