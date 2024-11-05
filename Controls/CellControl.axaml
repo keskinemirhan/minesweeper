@@ -9,7 +9,7 @@
         Height="50"
         Margin="0"
         x:Name="CellButton"
-        Background="#bbbbbb"
+        Background="#999999"
         >
         <Image Width="35" IsVisible="false" Height="35" x:Name="CellImg" Source="/Assets/flag.png"/>
     </Button>    
