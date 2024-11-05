@@ -1,16 +1,5 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="minesweeper.Controls.CellControl">
-    <Button 
-        HorizontalAlignment="Stretch" 
-        VerticalAlignment="Stretch" 
-        CornerRadius="0"
-        Width="50"
-        Height="50"
-        Margin="0"
-        x:Name="CellButton"
-        Background="#999999"
-        >
-        <Image Width="35" IsVisible="false" Height="35" x:Name="CellImg" Source="/Assets/flag.png"/>
-    </Button>    
+<UserControl x:Class="minesweeper.Controls.CellControl" xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Button Background="#999999" CornerRadius="0" Height="50" HorizontalAlignment="Stretch" Margin="0" VerticalAlignment="Stretch" Width="50" x:Name="CellButton">
+    <Image Height="35" IsVisible="false" Source="/Assets/flag.png" Width="35" x:Name="CellImg"></Image>
+  </Button>
 </UserControl>

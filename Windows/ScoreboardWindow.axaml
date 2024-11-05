@@ -1,20 +1,8 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="minesweeper.Windows.ScoreboardWindow"
-        xmlns:vm="using:minesweeper.Windows"
-        x:DataType="vm:ScoreboardWindow"
-        Title="Windows_ScoreboardWindow">
-    <DataGrid Margin="20" ItemsSource="{Binding PlayerScores}" 
-              IsReadOnly="True" 
-              GridLinesVisibility="All"
-              x:Name="MainDataGrid"
-              BorderThickness="1" BorderBrush="Gray">
-        <DataGrid.Columns>
-         <DataGridTextColumn Header="Username"  Binding="{Binding username}" Width="*"/>
-         <DataGridTextColumn Header="Score"  Binding="{Binding score}" Width="*"/>
-        </DataGrid.Columns>
-    </DataGrid>
+<Window Title="Windows_ScoreboardWindow" d:DesignHeight="450" d:DesignWidth="800" mc:Ignorable="d" x:Class="minesweeper.Windows.ScoreboardWindow" x:DataType="vm:ScoreboardWindow" xmlns="https://github.com/avaloniaui" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:vm="using:minesweeper.Windows" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <DataGrid BorderBrush="Gray" BorderThickness="1" GridLinesVisibility="All" IsReadOnly="True" ItemsSource="{Binding PlayerScores}" Margin="20" x:Name="MainDataGrid">
+    <DataGrid.Columns>
+      <DataGridTextColumn Binding="{Binding username}" Header="Username" Width="*"></DataGridTextColumn>
+      <DataGridTextColumn Binding="{Binding score}" Header="Score" Width="*"></DataGridTextColumn>
+    </DataGrid.Columns>
+  </DataGrid>
 </Window>
