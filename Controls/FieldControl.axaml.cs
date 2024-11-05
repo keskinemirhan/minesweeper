@@ -55,6 +55,8 @@ public partial class FieldControl : UserControl
         {
             MoveIndicator.Text = "Moves: " + this.game.OpenCount.ToString();
         };
+        this.Width = window.Width;
+        this.Height = window.Height;
         window.Resized += (sender, e) =>
         {
             this.Width = window.Width;
