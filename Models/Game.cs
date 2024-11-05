@@ -20,6 +20,8 @@ public class Game<T> where T : ICell<T>, new()
     public int Score;
     public event EventHandler? SecondPassed;
     public event EventHandler? GameOver;
+    public event EventHandler? OpenedCell;
+    public int OpenCount;
     public bool IsOver { get; private set; }
     public bool HasWon { get; private set; }
 
@@ -46,6 +48,8 @@ public class Game<T> where T : ICell<T>, new()
     {
         if (this.IsOver) return;
         if (cell.IsFlagged) this.ToggleFlag(cell);
+        this.OpenCount++;
+        this.OpenedCell?.Invoke(this, EventArgs.Empty);
         if (cell.HasMine)
         {
             cell.HasOpened = true;
@@ -112,6 +116,7 @@ public class Game<T> where T : ICell<T>, new()
         this.MineCount = mineCount;
         this.username = username;
         this.scoreboard = scoreboard;
+        this.OpenCount = 0;
 
         this.cells = this.GenerateCells();
         this.NonOpenedCellCount = gridSize * gridSize - mineCount;

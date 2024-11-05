@@ -51,6 +51,10 @@ public partial class FieldControl : UserControl
             this.Height = window.Height;
         };
         this.game.StartTimer();
+        this.game.OpenedCell += (sender, e) =>
+        {
+            MoveIndicator.Text = "Moves: " + this.game.OpenCount.ToString();
+        };
         window.Resized += (sender, e) =>
         {
             this.Width = window.Width;
