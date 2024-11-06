@@ -4,12 +4,12 @@ namespace minesweeper.Models;
 
 public struct PlayerScore
 {
-    public string username { get; }
-    public int score { get; }
+    public string Username { get; }
+    public int Score { get; }
     public PlayerScore(string username, int score)
     {
-        this.username = username;
-        this.score = score;
+        this.Username = username;
+        this.Score = score;
     }
 
 }
@@ -21,7 +21,7 @@ public class Scoreboard
     {
         var playerScore = new PlayerScore(username, score);
         this.PlayerScoreList.Add(playerScore);
-        this.PlayerScoreList.Sort((s1, s2) => s2.score - s1.score);
+        this.PlayerScoreList.Sort((s1, s2) => s2.Score - s1.Score);
     }
     public Scoreboard()
     {
