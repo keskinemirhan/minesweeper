@@ -7,24 +7,24 @@ namespace minesweeper.Models;
 public class Game<T> where T : ICell<T>, new()
 {
     private int GridSize { get; set; }
-    public int NonOpenedCellCount { get; private set; }
-    public int FlaggedCellCount { get; private set; }
-    public int FlaggedMineCount { get; private set; }
-    public int MineCount { get; private set; }
+    private int NonOpenedCellCount { get; set; }
+    private int FlaggedMineCount { get; set; }
+    private T[,] cells;
 
-    public string username;
-    public Scoreboard scoreboard;
     private DispatcherTimer? timer;
-    public int GameSeconds;
-    public int Score;
-    public event EventHandler? SecondPassed;
-    public event EventHandler? GameOver;
-    public event EventHandler? OpenedCell;
-    public int OpenCount;
+    public Scoreboard scoreboard;
+
+    public string username { get; private set; }
+    public int GameSeconds { get; private set; }
+    public int Score { get; private set; }
+    public int OpenCount { get; private set; }
     public bool IsOver { get; private set; }
     public bool IsWin { get; private set; }
 
-    private T[,] cells;
+    public event EventHandler? SecondPassed;
+    public event EventHandler? GameOver;
+    public event EventHandler? OpenedCell;
+
 
     public T GetCell(int rowPos, int columnPos)
     {
@@ -110,14 +110,12 @@ public class Game<T> where T : ICell<T>, new()
     public Game(string username, Scoreboard scoreboard, int gridSize, int mineCount)
     {
         this.GridSize = gridSize;
-        this.MineCount = mineCount;
         this.username = username;
         this.scoreboard = scoreboard;
         this.OpenCount = 0;
 
         this.cells = this.GenerateCells();
         this.NonOpenedCellCount = gridSize * gridSize - mineCount;
-        this.FlaggedCellCount = 0;
 
         this.GenerateMines(mineCount);
         this.CountNeighborMines();
