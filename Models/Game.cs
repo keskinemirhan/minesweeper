@@ -6,8 +6,7 @@ namespace minesweeper.Models;
 
 public class Game<T> where T : ICell<T>, new()
 {
-    public int RowCount { get; private set; }
-    public int ColumnCount { get; private set; }
+    private int GridSize { get; set; }
     public int NonOpenedCellCount { get; private set; }
     public int FlaggedCellCount { get; private set; }
     public int FlaggedMineCount { get; private set; }
@@ -35,8 +34,8 @@ public class Game<T> where T : ICell<T>, new()
     public void OpenCell(int rowPos, int columnPos)
     {
         if (
-            rowPos >= this.RowCount ||
-            columnPos >= this.ColumnCount ||
+            rowPos >= this.GridSize ||
+            columnPos >= this.GridSize ||
             rowPos < 0 ||
             columnPos < 0
         ) return;
@@ -110,8 +109,7 @@ public class Game<T> where T : ICell<T>, new()
 
     public Game(string username, Scoreboard scoreboard, int gridSize, int mineCount)
     {
-        this.RowCount = gridSize;
-        this.ColumnCount = gridSize;
+        this.GridSize = gridSize;
         this.MineCount = mineCount;
         this.username = username;
         this.scoreboard = scoreboard;
@@ -165,14 +163,14 @@ public class Game<T> where T : ICell<T>, new()
     private void GenerateMines(int count)
     {
         var random = new Random();
-        for (int i = 0; i < count && i < this.RowCount * this.ColumnCount; i++)
+        for (int i = 0; i < count && i < this.GridSize * this.GridSize; i++)
         {
             int rowPos;
             int columnPos;
             do
             {
-                columnPos = random.Next(this.ColumnCount);
-                rowPos = random.Next(this.RowCount);
+                columnPos = random.Next(this.GridSize);
+                rowPos = random.Next(this.GridSize);
 
             } while (this.cells[columnPos, rowPos].HasMine);
             this.cells[columnPos, rowPos].HasMine = true;
@@ -180,9 +178,9 @@ public class Game<T> where T : ICell<T>, new()
     }
     private void CountNeighborMines()
     {
-        for (int rowPos = 0; rowPos < this.RowCount; rowPos++)
+        for (int rowPos = 0; rowPos < this.GridSize; rowPos++)
         {
-            for (int columnPos = 0; columnPos < this.ColumnCount; columnPos++)
+            for (int columnPos = 0; columnPos < this.GridSize; columnPos++)
             {
                 var cell = this.cells[rowPos, columnPos];
                 var neighbors = this.GetNeighbors(rowPos, columnPos);
@@ -196,10 +194,10 @@ public class Game<T> where T : ICell<T>, new()
 
     private T[,] GenerateCells()
     {
-        var genCells = new T[this.RowCount, this.ColumnCount];
-        for (int rowPos = 0; rowPos < this.RowCount; rowPos++)
+        var genCells = new T[this.GridSize, this.GridSize];
+        for (int rowPos = 0; rowPos < this.GridSize; rowPos++)
         {
-            for (int columnPos = 0; columnPos < this.ColumnCount; columnPos++)
+            for (int columnPos = 0; columnPos < this.GridSize; columnPos++)
             {
                 var cell = new T();
                 cell.RowPos = rowPos;
@@ -228,8 +226,8 @@ public class Game<T> where T : ICell<T>, new()
 
                 if ((neighborColumnPos == columnPos &&
                 neighborRowPos == rowPos) ||
-                neighborRowPos >= this.RowCount ||
-                neighborColumnPos >= this.ColumnCount ||
+                neighborRowPos >= this.GridSize ||
+                neighborColumnPos >= this.GridSize ||
                 neighborRowPos < 0 ||
                 neighborColumnPos < 0)
                     continue;
