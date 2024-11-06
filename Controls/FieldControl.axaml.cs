@@ -67,8 +67,8 @@ public partial class FieldControl : UserControl
     private void onGameOver()
     {
         ScoreboardButton.IsVisible = true;
-        GameOverIndicator.Text = $"Game Over! You " + (this.game.HasWon ? "Won! " : "Lose! ") + $"With {this.game.Score.ToString()} Points!";
-        GameOverIndicator.Foreground = this.game.HasWon ? new SolidColorBrush(Colors.Green) : new SolidColorBrush(Colors.Red);
+        GameOverIndicator.Text = $"Game Over! You " + (this.game.IsWin ? "Won! " : "Lose! ") + $"With {this.game.Score.ToString()} Points!";
+        GameOverIndicator.Foreground = this.game.IsWin ? new SolidColorBrush(Colors.Green) : new SolidColorBrush(Colors.Red);
         RetryButton.Click += (sender, e) =>
         {
             this.RetryGame?.Invoke(this, EventArgs.Empty);

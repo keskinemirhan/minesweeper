@@ -23,7 +23,7 @@ public class Game<T> where T : ICell<T>, new()
     public event EventHandler? OpenedCell;
     public int OpenCount;
     public bool IsOver { get; private set; }
-    public bool HasWon { get; private set; }
+    public bool IsWin { get; private set; }
 
     private T[,] cells;
 
@@ -150,7 +150,7 @@ public class Game<T> where T : ICell<T>, new()
         }
         if (this.GameSeconds == 0) this.GameSeconds = 1;
         this.Score = (int)(((float)this.FlaggedMineCount / (float)this.GameSeconds) * 1000.0);
-        this.HasWon = win;
+        this.IsWin = win;
         this.IsOver = true;
         this.GameOver?.Invoke(this, EventArgs.Empty);
         this.scoreboard.AddScore(this.username, this.Score);
