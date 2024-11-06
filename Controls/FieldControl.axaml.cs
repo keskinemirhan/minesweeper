@@ -11,11 +11,11 @@ public partial class FieldControl : UserControl
     public event EventHandler? RetryGame;
     public event EventHandler? GoToMenu;
 
-    public Game<CellControl> game;
+    public Game<CellControl> Game;
     public FieldControl(string username, Scoreboard scoreboard, int gridSize, int bombCount, Window window)
     {
         InitializeComponent();
-        this.game = new Game<CellControl>(username, scoreboard, gridSize, bombCount);
+        this.Game = new Game<CellControl>(username, scoreboard, gridSize, bombCount);
         MainGrid.RowDefinitions.Clear();
         MainGrid.ColumnDefinitions.Clear();
         for (int i = 0; i < gridSize; i++)
@@ -36,23 +36,23 @@ public partial class FieldControl : UserControl
         {
             for (int j = 0; j < gridSize; j++)
             {
-                var cell = this.game.GetCell(i, j);
+                var cell = this.Game.GetCell(i, j);
                 Grid.SetRow(cell, i);
                 Grid.SetColumn(cell, j);
                 MainGrid.Children.Add(cell);
             }
         }
-        this.game.SecondPassed += (sender, e) => TimeIndicator.Text = "Time: " + this.game.GameSeconds.ToString();
-        this.game.GameOver += (sender, e) =>
+        this.Game.SecondPassed += (sender, e) => TimeIndicator.Text = "Time: " + this.Game.GameSeconds.ToString();
+        this.Game.GameOver += (sender, e) =>
         {
-            this.onGameOver();
+            this.OnGameOver();
             this.Width = window.Width;
             this.Height = window.Height;
         };
-        this.game.StartTimer();
-        this.game.OpenedCell += (sender, e) =>
+        this.Game.StartTimer();
+        this.Game.OpenedCell += (sender, e) =>
         {
-            MoveIndicator.Text = "Moves: " + this.game.OpenCount.ToString();
+            MoveIndicator.Text = "Moves: " + this.Game.OpenCount.ToString();
         };
         this.Width = window.Width;
         this.Height = window.Height;
@@ -64,11 +64,11 @@ public partial class FieldControl : UserControl
     }
 
 
-    private void onGameOver()
+    public void OnGameOver()
     {
         ScoreboardButton.IsVisible = true;
-        GameOverIndicator.Text = $"Game Over! You " + (this.game.IsWin ? "Won! " : "Lose! ") + $"With {this.game.Score.ToString()} Points!";
-        GameOverIndicator.Foreground = this.game.IsWin ? new SolidColorBrush(Colors.Green) : new SolidColorBrush(Colors.Red);
+        GameOverIndicator.Text = $"Game Over! You " + (this.Game.IsWin ? "Won! " : "Lose! ") + $"With {this.Game.Score.ToString()} Points!";
+        GameOverIndicator.Foreground = this.Game.IsWin ? new SolidColorBrush(Colors.Green) : new SolidColorBrush(Colors.Red);
         RetryButton.Click += (sender, e) =>
         {
             this.RetryGame?.Invoke(this, EventArgs.Empty);
