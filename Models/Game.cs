@@ -6,15 +6,15 @@ namespace minesweeper.Models;
 
 public class Game<T> where T : ICell<T>, new()
 {
-    private int GridSize { get; set; }
-    private int NonOpenedCellCount { get; set; }
-    private int FlaggedMineCount { get; set; }
+    private int gridSize { get; set; }
+    private int nonOpenedCellCount { get; set; }
+    private int flaggedMineCount { get; set; }
     private T[,] cells;
-
     private DispatcherTimer? timer;
-    public Scoreboard scoreboard;
 
-    public string username { get; private set; }
+    public Scoreboard Scoreboard;
+
+    public string Username { get; private set; }
     public int GameSeconds { get; private set; }
     public int Score { get; private set; }
     public int OpenCount { get; private set; }
@@ -31,36 +31,47 @@ public class Game<T> where T : ICell<T>, new()
         return this.cells[rowPos, columnPos];
     }
 
-    public void OpenCell(int rowPos, int columnPos)
+    public void StartTimer()
     {
-        if (
-            rowPos >= this.GridSize ||
-            columnPos >= this.GridSize ||
-            rowPos < 0 ||
-            columnPos < 0
-        ) return;
-        var cell = this.GetCell(rowPos, columnPos);
-        this.OpenCell(cell);
+        this.timer = new DispatcherTimer();
+        this.timer.Interval = TimeSpan.FromSeconds(1);
+        this.timer.Tick += (sender, e) => this.updateTimer();
+        this.timer.Start();
     }
 
-    public void OpenCell(T cell)
+    public Game(string username, Scoreboard scoreboard, int gridSize, int mineCount)
+    {
+        this.gridSize = gridSize;
+        this.Username = username;
+        this.Scoreboard = scoreboard;
+        this.OpenCount = 0;
+
+        this.cells = this.generateCells();
+        this.nonOpenedCellCount = gridSize * gridSize - mineCount;
+
+        this.generateMines(mineCount);
+        this.countNeighborMines();
+        this.GameSeconds = 0;
+    }
+
+    private void openCell(T cell)
     {
         if (this.IsOver) return;
-        if (cell.IsFlagged) this.ToggleFlag(cell);
+        if (cell.IsFlagged) this.toggleFlag(cell);
         this.OpenCount++;
         this.OpenedCell?.Invoke(this, EventArgs.Empty);
         if (cell.HasMine)
         {
             cell.HasOpened = true;
-            this.EndGame(false);
+            this.endGame(false);
             return;
         }
         var openCells = new List<T>();
         this.openCellRecursive(cell, openCells);
-        this.NonOpenedCellCount -= openCells.Count;
-        if (this.NonOpenedCellCount <= 0)
+        this.nonOpenedCellCount -= openCells.Count;
+        if (this.nonOpenedCellCount <= 0)
         {
-            this.EndGame(true);
+            this.endGame(true);
         }
     }
 
@@ -71,7 +82,7 @@ public class Game<T> where T : ICell<T>, new()
         openCells.Add(cell);
         if (cell.NeighboringMineCount == 0)
         {
-            foreach (var neighbor in this.GetNeighbors(cell.RowPos, cell.ColumnPos))
+            foreach (var neighbor in this.getNeighbors(cell.RowPos, cell.ColumnPos))
             {
                 if (!neighbor.HasOpened)
                 {
@@ -81,75 +92,40 @@ public class Game<T> where T : ICell<T>, new()
         }
     }
 
-
-    public void ToggleFlag(T cell)
+    private void toggleFlag(T cell)
     {
         if (this.IsOver) return;
         if (cell.IsFlagged)
         {
             cell.IsFlagged = false;
-            if (cell.HasMine) this.FlaggedMineCount--;
+            if (cell.HasMine) this.flaggedMineCount--;
         }
         else if (!cell.HasOpened)
         {
             cell.IsFlagged = true;
-            if (cell.HasMine) this.FlaggedMineCount++;
+            if (cell.HasMine) this.flaggedMineCount++;
         }
     }
 
-    public List<T> GetMineCells()
-    {
-        var mineCells = new List<T>();
-        foreach (var cell in this.cells)
-        {
-            if (cell.HasMine) mineCells.Add(cell);
-        }
-        return mineCells;
-    }
-
-    public Game(string username, Scoreboard scoreboard, int gridSize, int mineCount)
-    {
-        this.GridSize = gridSize;
-        this.username = username;
-        this.scoreboard = scoreboard;
-        this.OpenCount = 0;
-
-        this.cells = this.GenerateCells();
-        this.NonOpenedCellCount = gridSize * gridSize - mineCount;
-
-        this.GenerateMines(mineCount);
-        this.CountNeighborMines();
-        this.GameSeconds = 0;
-
-    }
-
-    public void StartTimer()
-    {
-        this.timer = new DispatcherTimer();
-        this.timer.Interval = TimeSpan.FromSeconds(1);
-        this.timer.Tick += (sender, e) => this.updateTimer();
-        this.timer.Start();
-    }
-
-    private void EndGame(bool win)
+    private void endGame(bool win)
     {
         this.timer?.Stop();
         foreach (var cell in this.cells)
         {
             if (win && !cell.IsFlagged && cell.HasMine)
             {
-                ToggleFlag(cell);
+                toggleFlag(cell);
             }
             else if (cell.HasMine) cell.HasOpened = true;
 
 
         }
         if (this.GameSeconds == 0) this.GameSeconds = 1;
-        this.Score = (int)(((float)this.FlaggedMineCount / (float)this.GameSeconds) * 1000.0);
+        this.Score = (int)(((float)this.flaggedMineCount / (float)this.GameSeconds) * 1000.0);
         this.IsWin = win;
         this.IsOver = true;
         this.GameOver?.Invoke(this, EventArgs.Empty);
-        this.scoreboard.AddScore(this.username, this.Score);
+        this.Scoreboard.AddScore(this.Username, this.Score);
     }
 
     private void updateTimer()
@@ -158,30 +134,31 @@ public class Game<T> where T : ICell<T>, new()
         this.SecondPassed?.Invoke(this, EventArgs.Empty);
     }
 
-    private void GenerateMines(int count)
+    private void generateMines(int count)
     {
         var random = new Random();
-        for (int i = 0; i < count && i < this.GridSize * this.GridSize; i++)
+        for (int i = 0; i < count && i < this.gridSize * this.gridSize; i++)
         {
             int rowPos;
             int columnPos;
             do
             {
-                columnPos = random.Next(this.GridSize);
-                rowPos = random.Next(this.GridSize);
+                columnPos = random.Next(this.gridSize);
+                rowPos = random.Next(this.gridSize);
 
             } while (this.cells[columnPos, rowPos].HasMine);
             this.cells[columnPos, rowPos].HasMine = true;
         }
     }
-    private void CountNeighborMines()
+
+    private void countNeighborMines()
     {
-        for (int rowPos = 0; rowPos < this.GridSize; rowPos++)
+        for (int rowPos = 0; rowPos < this.gridSize; rowPos++)
         {
-            for (int columnPos = 0; columnPos < this.GridSize; columnPos++)
+            for (int columnPos = 0; columnPos < this.gridSize; columnPos++)
             {
                 var cell = this.cells[rowPos, columnPos];
-                var neighbors = this.GetNeighbors(rowPos, columnPos);
+                var neighbors = this.getNeighbors(rowPos, columnPos);
                 foreach (var neighbor in neighbors)
                 {
                     if (neighbor.HasMine) cell.NeighboringMineCount++;
@@ -190,12 +167,12 @@ public class Game<T> where T : ICell<T>, new()
         }
     }
 
-    private T[,] GenerateCells()
+    private T[,] generateCells()
     {
-        var genCells = new T[this.GridSize, this.GridSize];
-        for (int rowPos = 0; rowPos < this.GridSize; rowPos++)
+        var genCells = new T[this.gridSize, this.gridSize];
+        for (int rowPos = 0; rowPos < this.gridSize; rowPos++)
         {
-            for (int columnPos = 0; columnPos < this.GridSize; columnPos++)
+            for (int columnPos = 0; columnPos < this.gridSize; columnPos++)
             {
                 var cell = new T();
                 cell.RowPos = rowPos;
@@ -204,15 +181,15 @@ public class Game<T> where T : ICell<T>, new()
                 cell.HasOpened = false;
                 cell.IsFlagged = false;
                 cell.NeighboringMineCount = 0;
-                cell.ToggleFlagEvent += (sender, e) => this.ToggleFlag(cell);
-                cell.OpenCellEvent += (sender, e) => this.OpenCell(cell);
+                cell.ToggleFlagEvent += (sender, e) => this.toggleFlag(cell);
+                cell.OpenCellEvent += (sender, e) => this.openCell(cell);
                 genCells[rowPos, columnPos] = cell;
             }
         }
         return genCells;
     }
 
-    private List<T> GetNeighbors(int rowPos, int columnPos)
+    private List<T> getNeighbors(int rowPos, int columnPos)
     {
         var neighbors = new List<T>();
         for (int rowOffset = -1; rowOffset <= 1; rowOffset++)
@@ -224,8 +201,8 @@ public class Game<T> where T : ICell<T>, new()
 
                 if ((neighborColumnPos == columnPos &&
                 neighborRowPos == rowPos) ||
-                neighborRowPos >= this.GridSize ||
-                neighborColumnPos >= this.GridSize ||
+                neighborRowPos >= this.gridSize ||
+                neighborColumnPos >= this.gridSize ||
                 neighborRowPos < 0 ||
                 neighborColumnPos < 0)
                     continue;
@@ -237,5 +214,4 @@ public class Game<T> where T : ICell<T>, new()
         }
         return neighbors;
     }
-
 }
