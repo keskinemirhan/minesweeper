@@ -6,9 +6,9 @@ namespace minesweeper.Models;
 
 public class Game<T> where T : ICell<T>, new()
 {
-    private int gridSize { get; set; }
-    private int nonOpenedCellCount { get; set; }
-    private int flaggedMineCount { get; set; }
+    private int gridSize;
+    private int nonOpenedCellCount;
+    private int flaggedMineCount;
     private T[,] cells;
     private DispatcherTimer? timer;
 
