@@ -62,7 +62,7 @@ public class Game<T> where T : ICell<T>, new()
         this.OpenedCell?.Invoke(this, EventArgs.Empty);
         if (cell.HasMine)
         {
-            cell.HasOpened = true;
+            cell.IsOpen = true;
             this.endGame(false);
             return;
         }
@@ -77,14 +77,14 @@ public class Game<T> where T : ICell<T>, new()
 
     private void openCellRecursive(T cell, List<T> openCells)
     {
-        if (cell.HasOpened) return;
-        cell.HasOpened = true;
+        if (cell.IsOpen) return;
+        cell.IsOpen = true;
         openCells.Add(cell);
         if (cell.NeighboringMineCount == 0)
         {
             foreach (var neighbor in this.getNeighbors(cell.RowPos, cell.ColumnPos))
             {
-                if (!neighbor.HasOpened)
+                if (!neighbor.IsOpen)
                 {
                     this.openCellRecursive(neighbor, openCells);
                 }
@@ -100,7 +100,7 @@ public class Game<T> where T : ICell<T>, new()
             cell.IsFlagged = false;
             if (cell.HasMine) this.flaggedMineCount--;
         }
-        else if (!cell.HasOpened)
+        else if (!cell.IsOpen)
         {
             cell.IsFlagged = true;
             if (cell.HasMine) this.flaggedMineCount++;
@@ -116,7 +116,7 @@ public class Game<T> where T : ICell<T>, new()
             {
                 toggleFlag(cell);
             }
-            else if (cell.HasMine) cell.HasOpened = true;
+            else if (cell.HasMine) cell.IsOpen = true;
 
 
         }
@@ -178,7 +178,7 @@ public class Game<T> where T : ICell<T>, new()
                 cell.RowPos = rowPos;
                 cell.ColumnPos = columnPos;
                 cell.HasMine = false;
-                cell.HasOpened = false;
+                cell.IsOpen = false;
                 cell.IsFlagged = false;
                 cell.NeighboringMineCount = 0;
                 cell.ToggleFlagEvent += (sender, e) => this.toggleFlag(cell);

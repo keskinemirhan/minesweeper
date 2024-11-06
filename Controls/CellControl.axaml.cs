@@ -14,17 +14,17 @@ public partial class CellControl : UserControl, ICell<CellControl>
 {
     public event EventHandler? OpenCellEvent;
     public event EventHandler? ToggleFlagEvent;
-    private bool _hasOpened;
+    private bool _isOpen;
     public bool HasMine { get; set; }
-    public bool HasOpened
+    public bool IsOpen
     {
         get
         {
-            return this._hasOpened;
+            return this._isOpen;
         }
         set
         {
-            this._hasOpened = value;
+            this._isOpen = value;
             if (value)
             {
                 CellImg.IsVisible = false;
@@ -122,7 +122,7 @@ public partial class CellControl : UserControl, ICell<CellControl>
 
         return "[ Row: " + this.RowPos +
                ", Column: " + this.ColumnPos +
-               ", Opened: " + this.HasOpened +
+               ", Opened: " + this.IsOpen +
                ", Has Mine: " + this.HasMine +
                ", Flagged: " + this.IsFlagged +
                ", Neighboring Mine Count: " + this.NeighboringMineCount + " ]";
