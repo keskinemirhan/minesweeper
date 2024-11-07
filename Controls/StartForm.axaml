@@ -1,6 +1,7 @@
 <UserControl x:Class="minesweeper.Controls.StartForm" xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <StackPanel MaxWidth="400" MinWidth="100">
-    <TextBlock FontSize="24" Margin="20">Welcome to Minesweeper!</TextBlock>
+    <TextBlock FontSize="24" Margin="0 20 0 0">Welcome to Minesweeper!</TextBlock>
+    <TextBlock Margin="0 0 0 20">Emirhan Keskin 240229093</TextBlock>
     <TextBlock>Username:</TextBlock>
     <TextBox Margin="0,10" Watermark="Enter your name" x:Name="UserNameControl"></TextBox>
     <TextBlock>Enter Grid Size:</TextBlock>
